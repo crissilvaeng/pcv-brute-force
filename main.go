@@ -35,7 +35,16 @@ func main() {
 		return
 	}
 
-	for index, element := range paths {
-		fmt.Printf("%d -> %v -> %d\n", index, element, route.Cost(element))
+	var min float64
+	var path []int
+
+	for _, element := range paths {
+		cost := route.Cost(element)
+		if min == 0 || cost < min {
+			min = cost
+			path = element
+		}
 	}
+
+	fmt.Printf("Min. cost: %f\nRoute: %v", min, path)
 }

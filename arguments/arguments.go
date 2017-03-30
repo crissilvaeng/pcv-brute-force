@@ -11,7 +11,6 @@ const (
 
 // Argumentative returns the information passed as command line arguments.
 type Argumentative interface {
-	// Input returns a raw array of bytes from file input.
 	Input() ([]byte, error)
 }
 
@@ -19,6 +18,7 @@ type arguments struct {
 	values []string
 }
 
+// Input returns a raw array of bytes from file input.
 func (a *arguments) Input() ([]byte, error) {
 	buffer, err := ioutil.ReadFile(a.values[filename])
 	if err != nil {

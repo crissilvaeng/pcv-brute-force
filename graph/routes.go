@@ -5,21 +5,20 @@ import (
 	"encoding/csv"
 	"strconv"
 
-	"fmt"
-
 	"github.com/fighterlyt/permutation"
 )
 
 type graph struct {
-	edges [][]int
+	edges [][]float64
 }
 
 // Routable is the set of edges between the vertices of the graph.
 type Routable interface {
 	Paths() ([][]int, error)
-	Cost(path []int) int
+	Cost(path []int) float64
 }
 
+// Paths calculate a matrix with all possibilities of routes.
 func (g *graph) Paths() ([][]int, error) {
 	lenght := len(g.edges[0])
 	fatorial := func(v int) int {
@@ -64,10 +63,10 @@ func New(content []byte) (Routable, error) {
 	g := graph{}
 
 	for i, row := range matrix {
-		data := make([]int, len(matrix[i]))
+		data := make([]float64, len(matrix[i]))
 
 		for j, cell := range row {
-			data[j], err = strconv.Atoi(cell)
+			data[j], err = strconv.ParseFloat(cell, 64)
 			if err != nil {
 				return nil, err
 			}
@@ -79,21 +78,22 @@ func New(content []byte) (Routable, error) {
 	return &g, nil
 }
 
-func (g *graph) Cost(path []int) int {
-	cost := 0
+// Cost returns the total length between all cities in a route.
+func (g *graph) Cost(path []int) float64 {
+	cost := 0.0
 	length := len(path)
+	origin := path[0]
 
-	fmt.Println(path)
-
-	distance := func(start, end int) int {
-		if length == end {
-			return g.edges[path[start]][path[0]]
-		}
-		return g.edges[path[start]][path[end]]
+	distance := func(start, end int) float64 {
+		return g.edges[start][end]
 	}
 
 	for i := 0; i < length; i++ {
-		cost = cost + distance(i, i+1)
+		if (i + 1) == length {
+			cost = cost + distance(path[i], origin)
+		} else {
+			cost = cost + distance(path[i], path[i+1])
+		}
 	}
 
 	return cost
